@@ -1,7 +1,7 @@
-const router    = require('express').Router();
-const orderCtrl = require('../controllers/orderController');
+const router = require('express').Router();
+const ctrl = require('../controllers/orderController');
 
-router.post('/orders',       orderCtrl.createOrder);
-router.get('/orders/:id',    orderCtrl.getOrderStatus);
+router.post('/:cafeId/orders', ctrl.createOrder);
+router.get('/:cafeId/orders/:orderId', ctrl.getOrder);
 
 module.exports = router;

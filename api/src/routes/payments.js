@@ -1,10 +1,6 @@
-// api/src/routes/payments.js
+const router = require('express').Router();
+const ctrl = require('../controllers/paymentController');
 
-// **Express**'in Router'ını aldığımızdan emin olalım:
-const router    = require('express').Router();
-const payCtrl   = require('../controllers/paymentController');
-
-// POST /api/pay ile mock ödeme
-router.post('/pay', payCtrl.payOrder);
+router.post('/:cafeId/pay', ctrl.payOrder);
 
 module.exports = router;

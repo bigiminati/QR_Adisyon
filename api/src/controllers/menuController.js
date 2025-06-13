@@ -1,23 +1,17 @@
 const Category = require('../models/Category');
-const Product  = require('../models/Product');
+const Product = require('../models/Product');
 
-// Kategorileri getir
 exports.getCategories = async (req, res) => {
-  try {
-    const categories = await Category.findAll();
-    res.json(categories);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const { cafeId } = req.params;
+  const cats = await Category.findAll({ where: { cafe_id: cafeId } });
+  return res.json(cats);
 };
 
-// Belirli kategoriye ait ürünleri getir
 exports.getProductsByCategory = async (req, res) => {
+  const { cafeId } = req.params;
   const { category_id } = req.query;
-  try {
-    const products = await Product.findAll({ where: { category_id } });
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const prods = await Product.findAll({
+    where: { cafe_id: cafeId, category_id }
+  });
+  return res.json(prods);
 };

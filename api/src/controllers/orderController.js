@@ -1,43 +1,28 @@
-const Order     = require('../models/Order');
+const Order = require('../models/Order');
 const OrderItem = require('../models/OrderItem');
 
-// Yeni sipariş oluştur
 exports.createOrder = async (req, res) => {
+  const { cafeId } = req.params;
   const { table_id, items } = req.body;
-  try {
-    // 1. Order kaydı
-    const order = await Order.create({ table_id, total_price: 0 });
-
-    // 2. Kalemleri kaydet + toplam fiyatı hesapla
-    let total = 0;
-    for (const it of items) {
-      const { product_id, quantity, unit_price } = it;
-      total += quantity * unit_price;
-      await OrderItem.create({
-        order_id: order.id,
-        product_id,
-        quantity,
-        unit_price
-      });
-    }
-
-    // 3. Order'ı güncelle
-    order.total_price = total;
-    await order.save();
-
-    res.status(201).json(order);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  const order = await Order.create({ cafe_id: cafeId, table_id, total_price: 0 });
+  let total = 0;
+  for (let it of items) {
+    await OrderItem.create({
+      order_id: order.id,
+      product_id: it.id || it.product_id,
+      quantity: it.quantity,
+      unit_price: it.price || it.unit_price
+    });
+    total += (it.price || it.unit_price) * it.quantity;
   }
+  order.total_price = total;
+  await order.save();
+  return res.json({ id: order.id, status: order.status });
 };
 
-// Sipariş durumu sorgula
-exports.getOrderStatus = async (req, res) => {
-  try {
-    const order = await Order.findByPk(req.params.id);
-    if (!order) return res.status(404).json({ error: 'Sipariş bulunamadı' });
-    res.json({ status: order.status });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+exports.getOrder = async (req, res) => {
+  const { orderId } = req.params;
+  const order = await Order.findByPk(orderId, { include: OrderItem });
+  return res.json(order);
 };
+

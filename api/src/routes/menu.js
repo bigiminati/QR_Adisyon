@@ -1,7 +1,7 @@
 const router = require('express').Router();
-const menuCtrl = require('../controllers/menuController');
+const ctrl = require('../controllers/menuController');
 
-router.get('/categories', menuCtrl.getCategories);
-router.get('/products',   menuCtrl.getProductsByCategory);
+router.get('/:cafeId/categories', ctrl.getCategories);
+router.get('/:cafeId/products', ctrl.getProductsByCategory);
 
 module.exports = router;
